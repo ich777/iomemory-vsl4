@@ -50,6 +50,7 @@ endif
 FIOARCH ?= $(shell uname -m)
 CCMAJOR ?= $(shell echo __GNUC__ | $(FIOCC) -E -xc - | tail -n 1)
 CCMINOR ?= $(shell echo __GNUC_MINOR__ | $(FIOCC) -E -xc - | tail -n 1)
+CCVER=$(CCMAJOR)$(CCMINOR)
 # This is a hack till we have something else figured out..... *sauces*
 LAST_REAL_CCVER ?= "x86_64_cc63_libkfio.o_shipped"
 LAST_CCVER := $(shell ls -1 kfio | grep $(LAST_REAL_CCVER) | sed -n 's/.*_cc\([0-9][0-9]*\)_.*/\1/p' | tail -1)
