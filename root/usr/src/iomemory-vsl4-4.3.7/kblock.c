@@ -53,6 +53,7 @@
 #include <fio/port/cdev.h>
 #include <linux/buffer_head.h>
 #include <linux/blk-mq.h>
+#include <linux/part_stat.h>
 
 
 extern int use_workqueue;
