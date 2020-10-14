@@ -58,6 +58,7 @@ MODULE_VERSION ?= $(shell git rev-parse --short HEAD)
 TARGET ?= $(FIOARCH)_cc$(CCMAJOR)$(CCMINOR)
 
 KFIO_LIB ?= kfio/$(TARGET)_libkfio.o_shipped
+KFIO_LIB_CMD ?= kfio/.$(TARGET)_libkfio.o.cmd
 LAST_KFIO_LIB := $(shell ls -1 kfio | sort | tail -1)
 
 NCPUS:=$(shell grep -c ^processor /proc/cpuinfo)
@@ -74,7 +75,15 @@ fake_license:
 check_n_fix_kfio_ccver:
 	if [ "${CCVER}" -gt "${LAST_CCVER}" ];then \
 		if [ ! -f "${KFIO_LIB}" ];then \
-			cp kfio/${LAST_KFIO_LIB} ${KFIO_LIB}; \
+			cp -v kfio/${LAST_KFIO_LIB} ${KFIO_LIB}; \
+		fi \
+	fi
+
+.PHONY: check_n_fix_kfio_cmd_ccver
+check_n_fix_kfio_cmd_ccver:
+	if [ "${CCVER}" -gt "${LAST_CCVER}" ];then \
+		if [ ! -f "${KFIO_LIB_CMD}" ];then \
+			touch ${KFIO_LIB_CMD}; \
 		fi \
 	fi
 
@@ -129,7 +138,7 @@ rpm:
 		cd $(shell git rev-parse --show-toplevel) && \
 			$(MAKE) rpm
 
-modules modules_install: check_n_fix_kfio_ccver check_target_kernel include/fio/port/linux/kfio_config.h add_module_version
+modules modules_install: check_n_fix_kfio_ccver check_target_kernel include/fio/port/linux/kfio_config.h add_module_version check_n_fix_kfio_cmd_ccver
 	$(MAKE) \
     -j$(NCPUS) \
 	-C $(KERNEL_BUILD) \
