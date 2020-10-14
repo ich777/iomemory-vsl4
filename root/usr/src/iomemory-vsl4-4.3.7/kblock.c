@@ -1597,17 +1597,17 @@ static struct request_queue *kfio_alloc_queue(struct kfio_disk *dp,
     test_safe_plugging(); // not sure if this is needed now.
 
     rq = blk_alloc_queue(kfio_make_request, node);
-    /*rq = blk_alloc_queue_node(GFP_NOIO, node);
+    /*rq = blk_alloc_queue_node(GFP_NOIO, node); */
     if (rq != NULL)
     {
         rq->queuedata = dp;
-        blk_queue_make_request(rq, kfio_make_request);
+        /*blk_queue_make_request(rq, kfio_make_request);*/
 
         // TODO:
         // if kfio_disk support spinlock_t instead of lame fusion_spinlock_t for queueu_lock
         // dp->queue_lock = rq->queue_lock;
         memcpy((void*) &dp->queue_lock, &rq->queue_lock, sizeof(dp->queue_lock));
-    }*/
+    }
     return rq;
 }
 
