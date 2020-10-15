@@ -55,6 +55,10 @@
 #include <linux/blk-mq.h>
 #include <linux/part_stat.h>
 
+#if KFIOC_X_LINUX_HAS_PART_STAT_H
+#include <linux/part_stat.h>
+#endif
+
 extern int use_workqueue;
 static int fio_major;
 
@@ -1596,12 +1600,17 @@ static struct request_queue *kfio_alloc_queue(struct kfio_disk *dp,
 
     test_safe_plugging(); // not sure if this is needed now.
 
-    rq = blk_alloc_queue(kfio_make_request, node);
-    /*rq = blk_alloc_queue_node(GFP_NOIO, node); */
+    #if KFIOC_X_BLK_ALLOC_QUEUE_NODE_EXISTS
+        rq = blk_alloc_queue_node(GFP_NOIO, node);
+    #else
+        rq = blk_alloc_queue(kfio_make_request, node);
+    #endif
     if (rq != NULL)
     {
         rq->queuedata = dp;
-        /*blk_queue_make_request(rq, kfio_make_request);*/
+        #if KFIOC_X_BLK_ALLOC_QUEUE_NODE_EXISTS
+            blk_queue_make_request(rq, kfio_make_request);
+        #endif
 
         // TODO:
         // if kfio_disk support spinlock_t instead of lame fusion_spinlock_t for queueu_lock
